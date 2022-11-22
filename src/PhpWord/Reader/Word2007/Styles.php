@@ -62,19 +62,31 @@ class Styles extends AbstractPart
         if ($nodes->length > 0) {
             foreach ($nodes as $node) {
                 $type = $xmlReader->getAttribute('w:type', $node);
-                $name = $xmlReader->getAttribute('w:val', $node, 'w:name');
+                $name = $xmlReader->getAttribute('w:styleId', $node);
                 if (null === $name) {
-                    $name = $xmlReader->getAttribute('w:styleId', $node);
+                    $name = $xmlReader->getAttribute('w:val', $node, 'w:name');
                 }
-                $headingMatches = [];
-                preg_match('/Heading\s*(\d)/i', $name, $headingMatches);
                 // $default = ($xmlReader->getAttribute('w:default', $node) == 1);
                 switch ($type) {
                     case 'paragraph':
                         $paragraphStyle = $this->readParagraphStyle($xmlReader, $node);
                         $fontStyle = $this->readFontStyle($xmlReader, $node);
-                        if (!empty($headingMatches)) {
-                            $phpWord->addTitleStyle($headingMatches[1], $fontStyle, $paragraphStyle);
+                        $val = $xmlReader->getAttribute('w:val', $node, 'w:name');
+                        $depth = null;
+                        if (isset($val)) {
+                            $val = strtolower(trim($val));
+                            if ($val === 'title') {
+                                $depth = 0;
+                            } else {
+                                $headingMatches = array();
+                                preg_match('/heading\s*(\d+)/', $val, $headingMatches);
+                                if (!empty($headingMatches)) {
+                                    $depth = (int)$headingMatches[1];
+                                }
+                            }
+                        }
+                        if ($depth !== null) {
+                            $phpWord->addTitleStyle($depth, $name, $fontStyle, $paragraphStyle);
                         } else {
                             if (empty($fontStyle)) {
                                 if (is_array($paragraphStyle)) {

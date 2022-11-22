@@ -66,7 +66,7 @@ class Settings
      * OOXML defined font size values in halfpoints, i.e. twice of what PhpWord
      * use, and the conversion will be conducted during XML writing.
      */
-    const DEFAULT_FONT_NAME = 'Arial';
+    const DEFAULT_FONT_NAME = 'Calibri';
     const DEFAULT_FONT_SIZE = 10;
     const DEFAULT_FONT_COLOR = '000000';
     const DEFAULT_FONT_CONTENT_TYPE = 'default'; // default|eastAsia|cs

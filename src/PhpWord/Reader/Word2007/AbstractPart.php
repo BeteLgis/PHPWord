@@ -25,6 +25,7 @@ use PhpOffice\PhpWord\Element\TextRun;
 use PhpOffice\PhpWord\Element\TrackChange;
 use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\Shared\XMLReader;
+use PhpOffice\PhpWord\Style;
 
 /**
  * Abstract part reader.
@@ -181,20 +182,12 @@ abstract class AbstractPart
      *
      * @param array $paragraphStyle
      *
-     * @return null|number
+     * @return null|int
      */
     private function getHeadingDepth(?array $paragraphStyle = null)
     {
         if (is_array($paragraphStyle) && isset($paragraphStyle['styleName'])) {
-            if ('Title' === $paragraphStyle['styleName']) {
-                return 0;
-            }
-
-            $headingMatches = [];
-            preg_match('/Heading(\d)/', $paragraphStyle['styleName'], $headingMatches);
-            if (!empty($headingMatches)) {
-                return $headingMatches[1];
-            }
+            return Style::getTitleDepth($paragraphStyle['styleName']);
         }
 
         return null;

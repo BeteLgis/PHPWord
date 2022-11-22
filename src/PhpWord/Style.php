@@ -36,6 +36,14 @@ class Style
     private static $styles = [];
 
     /**
+     * If this array contains a styleName, it is a Title (Heading)
+     * depth (0 for a Title) => styleName
+     *
+     * @var array
+     */
+    private static $titleStyles = array();
+
+    /**
      * Add paragraph style.
      *
      * @param string $styleName
@@ -93,19 +101,16 @@ class Style
     /**
      * Add title style.
      *
-     * @param null|int $depth Provide null to set title font
+     * @param int $depth Provide 0 to set title style
+     * @param string $styleName
      * @param array|\PhpOffice\PhpWord\Style\AbstractStyle $fontStyle
      * @param array|\PhpOffice\PhpWord\Style\AbstractStyle $paragraphStyle
      *
      * @return \PhpOffice\PhpWord\Style\Font
      */
-    public static function addTitleStyle($depth, $fontStyle, $paragraphStyle = null)
+    public static function addTitleStyle($depth, $styleName, $fontStyle, $paragraphStyle = null)
     {
-        if (empty($depth)) {
-            $styleName = 'Title';
-        } else {
-            $styleName = "Heading_{$depth}";
-        }
+        self::setTitleStyle($depth, $styleName);
 
         return self::setStyleValues($styleName, new Font('title', $paragraphStyle), $fontStyle);
     }
@@ -144,6 +149,7 @@ class Style
     public static function resetStyles(): void
     {
         self::$styles = [];
+        self::$titleStyles = [];
     }
 
     /**
@@ -213,5 +219,59 @@ class Style
         }
 
         return self::getStyle($name);
+    }
+
+    /**
+     * Get title styles
+     *
+     * @return array depth => styleName
+     */
+    public static function getTitleStyles()
+    {
+        return self::$titleStyles;
+    }
+
+    /**
+     * Get title depth
+     *
+     * @param string $styleName
+     * @return int depth
+     */
+    public static function getTitleDepth($styleName)
+    {
+        $flipped = array_flip(self::$titleStyles);
+        if (isset($flipped[$styleName])) {
+            return $flipped[$styleName];
+        }
+
+        return null;
+    }
+
+    /**
+     * Get title style name
+     *
+     * @param int $depth
+     * @return string styleName
+     */
+    public static function getTitleStyleName($depth)
+    {
+        if (isset(self::$titleStyles[$depth])) {
+            return self::$titleStyles[$depth];
+        }
+
+        return null;
+    }
+
+    /**
+     * Set title style
+     *
+     * @param int $depth
+     * @param string $styleName
+     */
+    public static function setTitleStyle($depth, $styleName)
+    {
+        if (!isset(self::$titleStyles[$depth])) {
+            self::$titleStyles[$depth] = $styleName;
+        }
     }
 }
